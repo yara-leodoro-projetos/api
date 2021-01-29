@@ -66,7 +66,6 @@ int main(int argc, char const *argv[])
         ucout << U("press ENTER key to quit...") << std::endl;
         std::string line;
         std::getline(std::cin, line);
-             
     }
     return 0;
 }
