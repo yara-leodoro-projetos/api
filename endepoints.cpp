@@ -1,5 +1,6 @@
 #include <iostream>
 #include <stdio.h>
+#include <vector>
 #include <cpprest/uri.h>
 #include <cpprest/http_listener.h>
 #include <cpprest/asyncrt_utils.h>
@@ -10,6 +11,8 @@ using namespace web;
 using namespace http;
 using namespace utility;
 using namespace http::experimental::listener;
+using namespace boost::asio;
+using namespace boost::asio::ip;
 
 class MyCommandHandler
 {
@@ -20,6 +23,10 @@ public:
     MyCommandHandler(utility::string_t url);
     pplx::task<void> open(){return m_listener.open();}
     pplx::task<void> close(){return m_listener.close();}
+    pplx::task<void> accept();
+    pplx::task<void> shutdown();
+    void setEndepoints(const std::string & value);
+    std::vector<utility::string_t> requestPatch(const http_request & message);
 
 private:
     
@@ -46,11 +53,12 @@ MyCommandHandler::MyCommandHandler(utility::string_t url) : m_listener(url)
     m_listener.support(methods::PUT, std::bind(&MyCommandHandler::handlerPost, this, std::placeholders::_1));
     m_listener.support(methods::POST, std::bind(&MyCommandHandler::handlerDelete, this, std::placeholders::_1));
     m_listener.support(methods::DEL, std::bind(&MyCommandHandler::handlerPatch, this, std::placeholders::_1));;
+    
 }
 
 void MyCommandHandler::handlerGet(http_request message)
 {
-    auto path = requestPath(message);
+    auto path = requestPatch(message);
     if (!path.empty())
     {
         if(path[0] == "service" && path[1] == "test")
@@ -120,10 +128,37 @@ json::value MyCommandHandler::responseNotImpl(const http::method & method)
     return response;
 }
 
+void MyCommandHandler::setEndepoints(const std::string &value)
+{
+    uri endpointURI(value);
+    uri_builder endpointBuilder;
+
+    endpointBuilder.set_scheme(endpointURI.scheme());
+    if (endpointURI.host() == "host_auto_ip4")
+    {
+        endpointBuilder.set_host(NetworkUtils::hostIP6());
+    }
+    else if()
+    {
+        
+    }
+    
+
+    
+    
+}
+
+
 
 int main(int argc, char const *argv[])
 {
    MyCommandHandler server;
+
+   server.setEndepoints("http://192.168.10.109:5000");
+   server.accept().wait();
+   std::cout << "Fazendo solicitações em : " << server.endpoint() << std::endl;
+
+
 }
 
 
