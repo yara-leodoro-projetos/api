@@ -1,0 +1,7 @@
+[
+{
+  "directory": "/home/iara/C++/APIRest/build",
+  "command": "/bin/g++-7  -DCPPREST_FORCE_HTTP_CLIENT_ASIO -DCPPREST_FORCE_HTTP_LISTENER_ASIO -DCPPREST_NO_SSL_LEAK_SUPPRESS  -g   -o CMakeFiles/ApiRest.dir/MyCommandHandler.cpp.o -c /home/iara/C++/APIRest/MyCommandHandler.cpp",
+  "file": "/home/iara/C++/APIRest/MyCommandHandler.cpp"
+}
+]
