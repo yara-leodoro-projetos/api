@@ -6,7 +6,7 @@ find_package(cpprestsdk REQUIRED)
 include(CTest)
 enable_testing()
 
-add_executable(ApiRest MyCommandHandler.cpp)
+add_executable(ApiRest endopoints.cpp)
 
 target_link_libraries(ApiRest PRIVATE cpprestsdk::cpprest)
 

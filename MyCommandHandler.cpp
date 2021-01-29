@@ -41,6 +41,7 @@ void MyCommandHandler::handlerGetPost(http_request message)
     message.reply(status_code(), "ACCEPTED");
 }
 
+
 int main(int argc, char const *argv[])
 {
     try
