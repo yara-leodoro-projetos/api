@@ -228,6 +228,7 @@ int main(int argc, char const *argv[])
         MyCommandHandler handler;
 
         handler.setEndepoints("http://localhost:5000/endpoint");
+        handler.setEndepoints("http://localhost:5000/analytics");
 
         handler.open(); 
 
