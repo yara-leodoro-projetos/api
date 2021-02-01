@@ -3,6 +3,8 @@
 #include <map>
 #include <regex>
 #include <vector>
+#include <mutex>
+#include <signal.h>
 #include <cpprest/uri.h>
 #include <cpprest/http_listener.h>
 #include <cpprest/asyncrt_utils.h>
@@ -46,12 +48,17 @@ public:
     static std::string hostIP4();
     static std::string hostIP6();
     static std::string hostName();
+    static void hookSIGINT();
+    static void waitForUserInterrupt();
+    static void handleUserInterrupt(int signal);
    
 private:
     
     static json::value responseNotImpl(const http::method & method);
     static HostInetInfo queryHostinetInfo();
     static std::string hostIP(unsigned short family);
+    static std::condition_variable _condition;
+    static std::mutex _mutex;
     void handlerGet(http_request message);
     void handlerPut(http_request message);
     void handlerPost(http_request message);
@@ -64,6 +71,7 @@ private:
     void handlerTrace(http_request message);
     void initRestOpHandler();
     http_listener listener;
+
 
 };
 
@@ -176,6 +184,30 @@ std::string MyCommandHandler::hostIP(unsigned short family)
     return nullptr;
 }
 
+void MyCommandHandler::hookSIGINT()
+{
+    signal(SIGINT, handleUserInterrupt);
+}
+
+void MyCommandHandler::handleUserInterrupt(int signal)
+{
+    if (signal == SIGINT)
+    {
+        std::cout << "Signit stoped" << std::endl;
+        _condition.notify_one();
+    }
+    
+}
+
+void MyCommandHandler::waitForUserInterrupt()
+{
+    std::unique_lock<std::mutex> lock {_mutex};
+    _condition.wait(lock);
+    std::cout << "Program interrupted by user" << std::endl;
+    lock.unlock();
+}
+
+
 void MyCommandHandler::setEndepoints(const std::string &value)
 {
     uri endpointURI(value);
@@ -227,8 +259,22 @@ int main(int argc, char const *argv[])
    MyCommandHandler server;
 
    server.setEndepoints("http://192.168.10.109:5000");
-   server.accept().wait();
-   std::cout << "Fazendo solicitações em : " << server.endpoint() << std::endl;
+
+   try
+   {
+       server.accept().wait();
+       std::cout << "Inicializando server..." << std::endl;
+       std::cout << "Buscando informações em: " << server.endpoint() << std::endl;
+
+       MyCommandHandler::waitForUserInterrupt();
+       
+       server.shutdown().wait();
+   }
+   catch(const std::exception& e)
+   {
+       std::cerr << e.what() << '\n';
+   }
+   return 0;
 }
 
 
