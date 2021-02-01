@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 3.0.0)
-project(ApiRest VERSION 0.1.0)
+project(apiRest VERSION 0.1.0)
 
 find_package(cpprestsdk REQUIRED)
 
 include(CTest)
 enable_testing()
 
-add_executable(ApiRest endopoints.cpp)
+add_executable(apiRest endopoints.cpp)
 
 target_link_libraries(ApiRest PRIVATE cpprestsdk::cpprest)
 
