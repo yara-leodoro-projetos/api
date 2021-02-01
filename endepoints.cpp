@@ -43,20 +43,22 @@ public:
     pplx::task<void> shutdown();
     void setEndepoints(const std::string & value);
     void initHandlers();
+    
+    std::string hostIP4();
+    std::string hostIP6();
     std::string endpoint();
     std::vector<utility::string_t> requestPatch(const http_request & message);
-    static std::string hostIP4();
-    static std::string hostIP6();
     static std::string hostName();
     static void hookSIGINT();
     static void waitForUserInterrupt();
     static void handleUserInterrupt(int signal);
-   
-private:
-    
-    static json::value responseNotImpl(const http::method & method);
     static HostInetInfo queryHostinetInfo();
     static std::string hostIP(unsigned short family);
+
+    
+   
+private:
+
     static std::condition_variable _condition;
     static std::mutex _mutex;
     void handlerGet(http_request message);
@@ -71,8 +73,6 @@ private:
     void handlerTrace(http_request message);
     void initRestOpHandler();
     http_listener listener;
-
-
 };
 
 void MyCommandHandler::initHandlers() 
@@ -96,6 +96,7 @@ void MyCommandHandler::handlerGet(http_request message)
             response["version"] = json::value::string("0.1.1");
             response["status"] = json::value::string("ready!");
             message.reply(status_codes::OK, response);
+            message.reply(status_code(), "ACCEPTED");;
         }
     }
     else
@@ -149,20 +150,11 @@ void MyCommandHandler::handlerTrace(http_request message)
     message.reply(status_codes::NotImplemented, (methods::TRCE));
 }
 
-json::value MyCommandHandler::responseNotImpl(const http::method & method)
-{
-    auto response = json::value::object();
-    response["serviceName"] = json::value::string("Endpoints");
-    response["http_method"] = json::value::string(method);
-    return response;
-}
-
 HostInetInfo MyCommandHandler::queryHostinetInfo()
 {
     io_service ios;
-
     tcp::resolver resolver(ios);
-    tcp::resolver::query query(host_name(), " ");
+    tcp::resolver::query query(host_name(), "");
     return resolver.resolve(query);
 }
 
@@ -170,43 +162,28 @@ std::string MyCommandHandler::hostIP(unsigned short family)
 {
     auto hostInetInfo = queryHostinetInfo();
     tcp::resolver::iterator end;
-
     while(hostInetInfo != end)
     {
         tcp::endpoint ep = *hostInetInfo++;
         sockaddr sa = *ep.data();
-
-        if(sa.sa_family == family)
+        if (sa.sa_family == family)
         {
             return ep.address().to_string();
         }
+       return nullptr;
     }
-    return nullptr;
+   
 }
 
-void MyCommandHandler::hookSIGINT()
+std::string MyCommandHandler::hostIP4()
 {
-    signal(SIGINT, handleUserInterrupt);
+    return hostIP(AF_INET);
 }
 
-void MyCommandHandler::handleUserInterrupt(int signal)
+std::string MyCommandHandler::hostIP6()
 {
-    if (signal == SIGINT)
-    {
-        std::cout << "Signit stoped" << std::endl;
-        _condition.notify_one();
-    }
-    
+    return hostIP(AF_INET6);
 }
-
-void MyCommandHandler::waitForUserInterrupt()
-{
-    std::unique_lock<std::mutex> lock {_mutex};
-    _condition.wait(lock);
-    std::cout << "Program interrupted by user" << std::endl;
-    lock.unlock();
-}
-
 
 void MyCommandHandler::setEndepoints(const std::string &value)
 {
@@ -256,28 +233,29 @@ std::vector<utility::string_t>MyCommandHandler::requestPatch(const http_request 
 
 int main(int argc, char const *argv[])
 {
-   MyCommandHandler server;
+    try
+    {
+        MyCommandHandler handler;
 
-   server.setEndepoints("http://192.168.10.109:5000");
+        handler.setEndepoints("http://host_auto_ip4:5000");
 
-   try
-   {
-       server.accept().wait();
-       std::cout << "Inicializando server..." << std::endl;
-       std::cout << "Buscando informações em: " << server.endpoint() << std::endl;
+        handler.open(); 
 
-       MyCommandHandler::waitForUserInterrupt();
-       
-       server.shutdown().wait();
-   }
-   catch(const std::exception& e)
-   {
-       std::cerr << e.what() << '\n';
-   }
-   return 0;
+        std::cout << utility::string_t(U("Listening for request at: ")) << handler.endpoint() << std::endl;
+        std::cout << U("press ENTER key to quit...") << std::endl;
+        std::string line;
+        std::getline(std::cin, line);
+        handler.close().wait();
+    }
+
+    catch(std::exception& ex)
+    {
+        std::cout << U("Exception: ") << ex.what() << std::endl;
+        std::cout << U("press ENTER key to quit...") << std::endl;
+        std::string line;
+        std::getline(std::cin, line);
+    }
+    return 0;
 }
-
-
-
 
 
