@@ -87,22 +87,12 @@ void MyCommandHandler::initHandlers()
 
 void MyCommandHandler::handlerGet(http_request message)
 {
-    auto path = requestPatch(message);
-    if (!path.empty())
-    {
-        if(path[0] == "service" && path[1] == "test")
-        {
-            auto response = json::value::object();
-            response["version"] = json::value::string("0.1.1");
-            response["status"] = json::value::string("ready!");
-            message.reply(status_codes::OK, response);
-            message.reply(status_code(), "ACCEPTED");;
-        }
-    }
-    else
-    {
-        message.reply(status_codes::NotFound);
-    }
+    
+    ucout << "Method: " << message.method() << std::endl;
+    ucout << "URI: " << http::uri::decode(message.relative_uri().path()) << std::endl;
+    ucout << "Query: " << http::uri::decode(message.relative_uri().query()) << std::endl << std::endl;
+    message.reply(status_code(), "ACCEPTED");
+
 }
 
 void MyCommandHandler::handlerPatch(http_request message)
@@ -192,7 +182,7 @@ void MyCommandHandler::setEndepoints(const std::string &value)
 
     endpointBuilder.set_scheme(endpointURI.scheme());
 
-    if (endpointURI.host() == "host_auto_ip4")
+    if (endpointURI.host() == "localhost")
     {
         endpointBuilder.set_host(MyCommandHandler::hostIP4());
     }
@@ -237,7 +227,7 @@ int main(int argc, char const *argv[])
     {
         MyCommandHandler handler;
 
-        handler.setEndepoints("http://host_auto_ip4:5000");
+        handler.setEndepoints("http://localhost:5000/endpoint");
 
         handler.open(); 
 

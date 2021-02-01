@@ -19,6 +19,7 @@ public:
     MyCommandHandler(utility::string_t url);
     pplx::task<void> open(){return m_listener.open();}
     pplx::task<void> close(){return m_listener.close();}
+    virtual void handlerRequest(http_request &request, http_response &response);
 
 private:
     
@@ -39,6 +40,24 @@ void MyCommandHandler::handlerGetPost(http_request message)
     ucout << "URI: " << http::uri::decode(message.relative_uri().path()) << std::endl;
     ucout << "Query: " << http::uri::decode(message.relative_uri().query()) << std::endl << std::endl;
     message.reply(status_code(), "ACCEPTED");
+}
+
+virtual void MyCommandHandler::handlerRequest(http_request &request, http_response &response)
+{
+    response.status_codes(OK);
+    response._set_server_context("text/html");
+
+    std::ostream& out = response.send();
+
+    out << "<h1> Hello World </h1>"
+        << "<p>Host: " << request.getHost() << "</p>"
+        << "<p>Method: " << request.getMethod() << "</p>"
+        << "<p>URI: " << request.getURI() << "</p>"
+        << "<p>String: " << "</p>"
+        << "<p>Count: " << count++ <<  "</p>";
+    out.flush();
+
+
 }
 
 
