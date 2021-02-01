@@ -229,8 +229,6 @@ int main(int argc, char const *argv[])
    server.setEndepoints("http://192.168.10.109:5000");
    server.accept().wait();
    std::cout << "Fazendo solicitações em : " << server.endpoint() << std::endl;
-
-
 }
 
 
