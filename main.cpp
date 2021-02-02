@@ -16,8 +16,8 @@ int main(int argc, char const *argv[])
 
         handler.open(); 
 
-        std::cout << utility::string_t(U("Listening for request at: ")) << handler.endpoint() << std::endl;
-        std::cout << U("press ENTER key to quit...") << std::endl;
+        std::cout << "Listening for request at: " << handler.endpoint() << std::endl;
+        std::cout << "press ENTER key to quit..." << std::endl;
         std::string line;
         std::getline(std::cin, line);
         handler.close().wait();
@@ -25,8 +25,8 @@ int main(int argc, char const *argv[])
 
     catch(std::exception& ex)
     {
-        std::cout << U("Exception: ") << ex.what() << std::endl;
-        std::cout << U("press ENTER key to quit...") << std::endl;
+        std::cout << "Exception: " << ex.what() << std::endl;
+        std::cout << "press ENTER key to quit..." << std::endl;
         std::string line;
         std::getline(std::cin, line);
     }
