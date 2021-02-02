@@ -78,11 +78,10 @@ private:
 void MyCommandHandler::initHandlers() 
 {
     listener.support(methods::GET, std::bind(&MyCommandHandler::handlerGet, this, std::placeholders::_1));
-    listener.support(methods::POST, std::bind(&MyCommandHandler::handlerPut, this, std::placeholders::_1));
-    listener.support(methods::PUT, std::bind(&MyCommandHandler::handlerPost, this, std::placeholders::_1));
-    listener.support(methods::POST, std::bind(&MyCommandHandler::handlerDelete, this, std::placeholders::_1));
-    listener.support(methods::DEL, std::bind(&MyCommandHandler::handlerPatch, this, std::placeholders::_1));;
-    
+    listener.support(methods::POST, std::bind(&MyCommandHandler::handlerPost, this, std::placeholders::_1));
+    listener.support(methods::PUT, std::bind(&MyCommandHandler::handlerPut, this, std::placeholders::_1));
+    listener.support(methods::PATCH, std::bind(&MyCommandHandler::handlerPatch, this, std::placeholders::_1));
+    listener.support(methods::DEL, std::bind(&MyCommandHandler::handlerDelete, this, std::placeholders::_1));;
 }
 
 void MyCommandHandler::handlerGet(http_request message)
