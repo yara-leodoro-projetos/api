@@ -1,3 +1,9 @@
+#include <iostream>
+#include <vector>
+#include <cpprest/uri.h>
+#include <cpprest/http_listener.h>
+#include <boost/asio.hpp>
+#include "api.hpp"
 
 int main(int argc, char const *argv[])
 {
