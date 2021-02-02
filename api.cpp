@@ -138,7 +138,6 @@ std::string MyCommandHandler::hostIP(unsigned short family)
         }
        return nullptr;
     }
-   
 }
 
 std::string MyCommandHandler::hostIP4()
