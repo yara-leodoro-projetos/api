@@ -1,23 +1,8 @@
 #include <iostream>
-#include <string>
-#include <regex>
 #include <vector>
-#include <mutex>
-#include <signal.h>
 #include <cpprest/uri.h>
 #include <cpprest/http_listener.h>
-#include <cpprest/asyncrt_utils.h>
-#include <cpprest/json.h>
-#include <boost/log/core.hpp>
-#include <boost/log/trivial.hpp>
-#include <boost/log/expressions.hpp>
-#include <boost/log/utility/setup/console.hpp>
-#include <boost/log/support/date_time.hpp>
-#include <boost/log/utility/setup/common_attributes.hpp>
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/json_parser.hpp>
 #include <boost/asio.hpp>
-#include <boost/algorithm/string.hpp>
 
 
 
@@ -44,7 +29,7 @@ public:
     std::string hostIP6();
     std::string endpoint();
     std::vector<utility::string_t> requestPatch(const web::http::http_request & message);
-    
+
     static std::string hostName();
     static HostInetInfo queryHostinetInfo();
     static std::string hostIP(unsigned short family);
@@ -53,8 +38,6 @@ public:
    
 private:
 
-    static std::condition_variable _condition;
-    static std::mutex _mutex;
     void handlerGet(web::http::http_request message);
     void handlerPut(web::http::http_request message);
     void handlerPost(web::http::http_request message);
@@ -212,34 +195,4 @@ std::vector<utility::string_t>MyCommandHandler::requestPatch(const web::http::ht
     auto relativePath = web::uri::decode(message.relative_uri().path());
     return web::uri::split_path(relativePath);
 }
-
-
-int main(int argc, char const *argv[])
-{
-    try
-    {
-        MyCommandHandler handler;
-
-        handler.setEndepoints("http://localhost:5000/endpoint");
-        handler.setEndepoints("http://localhost:5000/analytics");
-
-        handler.open(); 
-
-        std::cout << utility::string_t(U("Listening for request at: ")) << handler.endpoint() << std::endl;
-        std::cout << U("press ENTER key to quit...") << std::endl;
-        std::string line;
-        std::getline(std::cin, line);
-        handler.close().wait();
-    }
-
-    catch(std::exception& ex)
-    {
-        std::cout << U("Exception: ") << ex.what() << std::endl;
-        std::cout << U("press ENTER key to quit...") << std::endl;
-        std::string line;
-        std::getline(std::cin, line);
-    }
-    return 0;
-}
-
 
