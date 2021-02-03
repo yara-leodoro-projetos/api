@@ -9,47 +9,6 @@ using namespace web::http::experimental::listener;
 
 using HostInetInfo = boost::asio::ip::tcp::resolver::iterator;
 
-class MyCommandHandler
-{
-public:
-
-    MyCommandHandler(){}
-
-    MyCommandHandler(utility::string_t url);
-    pplx::task<void> open(){return listener.open();}
-    pplx::task<void> close(){return listener.close();}
-    pplx::task<void> accept();
-    pplx::task<void> shutdown();
-
-    void initHandlers();
-    void setEndpoints(const std::string &value);
-
-    std::string hostIP4();
-    std::string hostIP6();
-    std::string endpoint();
-    std::vector<utility::string_t> requestPatch(const web::http::http_request & message);
-
-    static std::string hostName();
-    static HostInetInfo queryHostinetInfo();
-    static std::string hostIP(unsigned short family);
-
-    
-   
-private:
-
-    void handlerGet(web::http::http_request message);
-    void handlerPut(web::http::http_request message);
-    void handlerPost(web::http::http_request message);
-    void handlerDelete(web::http::http_request message);
-    void handlerPatch(web::http::http_request message);
-    void handlerHead(web::http::http_request message);
-    void handlerOptions(web::http::http_request message);
-    void handlerConnect(web::http::http_request message);
-    void handlerMerge(web::http::http_request message);
-    void handlerTrace(web::http::http_request message);
-    void initRestOpHandler();
-    http_listener listener;
-};
 
 void MyCommandHandler::initHandlers() 
 {
@@ -149,24 +108,20 @@ std::string MyCommandHandler::hostIP6()
     return hostIP(AF_INET6);
 }
 
-void setEndpoints(const std::string &value);
+void MyCommandHandler::setEndpoints(const std::string &values)
 {
-    web::uri endpointURI(value);
+    web::uri endpointURI(values);
     web::uri_builder endpointBuilder;
 
     endpointBuilder.set_scheme(endpointURI.scheme());
 
-    if (endpointURI.host() == "localhost")
-    {
-        endpointBuilder.set_host(MyCommandHandler::hostIP4());
-    }
-    else if(endpointURI.host() == "host_auto_ip6")
-    {
-        endpointBuilder.set_host(MyCommandHandler::hostIP6());
-    }
+    
+    endpointBuilder.set_host(endpointURI.host());
+    
 
     endpointBuilder.set_port(endpointURI.port());
     endpointBuilder.set_path(endpointURI.path());
+    std::cout << endpointURI.port() << " " << endpointURI.path()<< " " << endpointURI.scheme() << " " << endpointURI.host()<< std::endl;
 
     listener =  http_listener(endpointBuilder.to_uri());
 }
@@ -174,7 +129,6 @@ void setEndpoints(const std::string &value);
 std::string MyCommandHandler::endpoints() 
 {
     return listener.uri().to_string();
-
 }
 
 pplx::task<void>MyCommandHandler::accept()

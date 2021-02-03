@@ -23,7 +23,7 @@ public:
     pplx::task<void> shutdown();
 
     void initHandlers();
-    void setEndpoints(const std::string &value);
+    void setEndpoints(const std::string &values);
 
     std::string hostIP4();
     std::string hostIP6();
