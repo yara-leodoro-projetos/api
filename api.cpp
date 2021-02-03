@@ -22,7 +22,7 @@ public:
     pplx::task<void> shutdown();
 
     void initHandlers();
-    void setEndepoints(const std::string & value);
+    void setEndpoints(const std::string &value);
 
     std::string hostIP4();
     std::string hostIP6();
@@ -149,7 +149,7 @@ std::string MyCommandHandler::hostIP6()
     return hostIP(AF_INET6);
 }
 
-void MyCommandHandler::setEndepoints(const std::string &value)
+void setEndpoints(const std::string &value);
 {
     web::uri endpointURI(value);
     web::uri_builder endpointBuilder;
@@ -171,7 +171,7 @@ void MyCommandHandler::setEndepoints(const std::string &value)
     listener =  http_listener(endpointBuilder.to_uri());
 }
 
-std::string MyCommandHandler::endpoint() 
+std::string MyCommandHandler::endpoints() 
 {
     return listener.uri().to_string();
 

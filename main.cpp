@@ -11,12 +11,10 @@ int main(int argc, char const *argv[])
     {
         MyCommandHandler handler;
 
-        handler.setEndepoints("http://localhost:5000/endpoint");
-        handler.setEndepoints("http://localhost:5000/analytics");
-
+        handler.setEndpoints("http://localhost:5000/endpoint");
         handler.open(); 
 
-        std::cout << "Listening for request at: " << handler.endpoint() << std::endl;
+        std::cout << "Listening for request at: " << handler.endpoints() << std::endl;
         std::cout << "press ENTER key to quit..." << std::endl;
         std::string line;
         std::getline(std::cin, line);
