@@ -98,30 +98,16 @@ std::string MyCommandHandler::hostIP(unsigned short family)
     }
 }
 
-std::string MyCommandHandler::hostIP4()
-{
-    return hostIP(AF_INET);
-}
-
-std::string MyCommandHandler::hostIP6()
-{
-    return hostIP(AF_INET6);
-}
-
 void MyCommandHandler::setEndpoints(const std::string &values)
 {
     web::uri endpointURI(values);
     web::uri_builder endpointBuilder;
 
     endpointBuilder.set_scheme(endpointURI.scheme());
-
-    
     endpointBuilder.set_host(endpointURI.host());
-    
 
     endpointBuilder.set_port(endpointURI.port());
     endpointBuilder.set_path(endpointURI.path());
-    std::cout << endpointURI.port() << " " << endpointURI.path()<< " " << endpointURI.scheme() << " " << endpointURI.host()<< std::endl;
 
     listener =  http_listener(endpointBuilder.to_uri());
 }

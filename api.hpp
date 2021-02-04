@@ -25,8 +25,6 @@ public:
     void initHandlers();
     void setEndpoints(const std::string &values);
 
-    std::string hostIP4();
-    std::string hostIP6();
     std::string endpoints();
     std::vector<utility::string_t> requestPatch(const web::http::http_request & message);
 
