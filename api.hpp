@@ -28,9 +28,7 @@ public:
 
     static std::string hostName();
     static HostInetInfo queryHostinetInfo();
-    static std::string hostIP(unsigned short family);
 
-    
    
 private:
 

@@ -77,22 +77,6 @@ HostInetInfo MyCommandHandler::queryHostinetInfo()
     return resolver.resolve(query);
 }
 
-std::string MyCommandHandler::hostIP(unsigned short family)
-{
-    auto hostInetInfo = queryHostinetInfo();
-    boost::asio::ip::tcp::resolver::iterator end;
-    while(hostInetInfo != end)
-    {
-        boost::asio::ip::tcp::endpoint ep = *hostInetInfo++;
-        sockaddr sa = *ep.data();
-        if (sa.sa_family == family)
-        {
-            return ep.address().to_string();
-        }
-       return nullptr;
-    }
-}
-
 void MyCommandHandler::setEndpoints(const std::string &values)
 {
     web::uri endpointURI(values);
