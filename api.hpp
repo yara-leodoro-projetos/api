@@ -8,7 +8,6 @@
 #include <boost/asio.hpp>
 
 using namespace web::http::experimental::listener;
-using HostInetInfo = boost::asio::ip::tcp::resolver::iterator;
 
 class MyCommandHandler
 {
@@ -27,7 +26,6 @@ public:
     std::vector<utility::string_t> requestPatch(const web::http::http_request & message);
 
     static std::string hostName();
-    static HostInetInfo queryHostinetInfo();
 
    
 private:

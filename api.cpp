@@ -7,8 +7,6 @@
 
 using namespace web::http::experimental::listener;
 
-using HostInetInfo = boost::asio::ip::tcp::resolver::iterator;
-
 
 void MyCommandHandler::initHandlers() 
 {
@@ -67,14 +65,6 @@ void MyCommandHandler::handlerConnect(web::http::http_request message)
 void MyCommandHandler::handlerTrace(web::http::http_request message)
 {
     message.reply(web::http::status_codes::NotImplemented, (web::http::methods::TRCE));
-}
-
-HostInetInfo MyCommandHandler::queryHostinetInfo()
-{
-    boost::asio::io_service ios;
-    boost::asio::ip::tcp::resolver resolver(ios);
-    boost::asio::ip::tcp::resolver::query query(boost::asio::ip::host_name(), "");
-    return resolver.resolve(query);
 }
 
 void MyCommandHandler::setEndpoints(const std::string &values)
