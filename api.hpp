@@ -17,8 +17,6 @@ public:
     MyCommandHandler(){}
 
     MyCommandHandler(utility::string_t url);
-    pplx::task<void> open(){return listener.open();}
-    pplx::task<void> close(){return listener.close();}
     pplx::task<void> accept();
     pplx::task<void> shutdown();
 
