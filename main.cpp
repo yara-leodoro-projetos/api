@@ -11,7 +11,7 @@ int main(int argc, char const *argv[])
     {
         MyCommandHandler handler;
 
-        handler.setEndpoints("http://127.0.0.1:5000/endpoints");
+        handler.setEndpoints("http://172.19.7.132:5000/endpoints");
         handler.initHandlers();
         handler.open(); 
 
@@ -19,6 +19,7 @@ int main(int argc, char const *argv[])
         std::cout << "press ENTER key to quit..." << std::endl;
         std::string line;
         std::getline(std::cin, line);
+        handler.shutdown();
     }
 
     catch(std::exception& ex)

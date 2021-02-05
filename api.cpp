@@ -21,12 +21,7 @@ void MyCommandHandler::initHandlers()
 
 void MyCommandHandler::handlerGet(web::http::http_request message)
 {
-    
-    ucout << "Method: " << message.method() << std::endl;
-    ucout << "URI: " << web::http::uri::decode(message.relative_uri().path()) << std::endl;
-    ucout << "Query: " << web::http::uri::decode(message.relative_uri().query()) << std::endl << std::endl;
     message.reply(web::http::status_code(), "ACCEPTED");
-
 }
 
 void MyCommandHandler::handlerPatch(web::http::http_request message)
