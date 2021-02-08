@@ -2,6 +2,8 @@
 #include <vector>
 #include <cpprest/uri.h>
 #include <cpprest/http_listener.h>
+#include <cpprest/json.h>
+#include <boost/property_tree/json_parser.hpp>
 #include <boost/asio.hpp>
 #include "api.hpp"
 
@@ -10,59 +12,71 @@ using namespace web::http::experimental::listener;
 
 void MyCommandHandler::initHandlers() 
 {
-    listener.support(web::http::methods::GET, std::bind(&MyCommandHandler::handlerGet, this, std::placeholders::_1));
-    listener.support(web::http::methods::POST, std::bind(&MyCommandHandler::handlerPost, this, std::placeholders::_1));
-    listener.support(web::http::methods::PUT, std::bind(&MyCommandHandler::handlerPut, this, std::placeholders::_1));
-    listener.support(web::http::methods::PATCH, std::bind(&MyCommandHandler::handlerPatch, this, std::placeholders::_1));
-    listener.support(web::http::methods::DEL, std::bind(&MyCommandHandler::handlerDelete, this, std::placeholders::_1));;
+    _listener.support(web::http::methods::GET, std::bind(&MyCommandHandler::handleGet, this, std::placeholders::_1));
+    _listener.support(web::http::methods::POST, std::bind(&MyCommandHandler::handlePost, this, std::placeholders::_1));
+    _listener.support(web::http::methods::PUT, std::bind(&MyCommandHandler::handlePut, this, std::placeholders::_1));
+   _listener.support(web::http::methods::PATCH, std::bind(&MyCommandHandler::handlePatch, this, std::placeholders::_1));
+    _listener.support(web::http::methods::DEL, std::bind(&MyCommandHandler::handleDelete, this, std::placeholders::_1));;
 }
 
-void MyCommandHandler::handlerGet(web::http::http_request message)
+void MyCommandHandler::handleGet(web::http::http_request message)
 {
-    message.reply(web::http::status_code(), "ACCEPTED");
+    auto path = requestPatch(message);
+
+    if (!path.empty())
+    {
+        if (path[1] == "person")
+        {
+            auto response = web::json::value::object();
+            response["mensage"] = web::json::value::string("person");
+            message.reply(web::http::status_codes::OK, response);
+            message.reply(web::http::status_code(), "ACCEPTED");    
+        }
+    }  
+    message.reply(web::http::status_codes::NotFound);
 }
 
-void MyCommandHandler::handlerPatch(web::http::http_request message)
+void MyCommandHandler::handlePatch(web::http::http_request message)
 {
    message.reply(web::http::status_codes::NotImplemented, (web::http::methods::PATCH));
 }
 
-void MyCommandHandler::handlerPut(web::http::http_request message)
+void MyCommandHandler::handlePut(web::http::http_request message)
 {
     message.reply(web::http::status_codes::NotImplemented, (web::http::methods::PUT));
 }
 
-void MyCommandHandler::handlerPost(web::http::http_request message)
+void MyCommandHandler::handlePost(web::http::http_request message)
 {
     message.reply(web::http::status_codes::NotImplemented, (web::http::methods::POST));
 }
 
-void MyCommandHandler::handlerDelete(web::http::http_request message)
+void MyCommandHandler::handleDelete(web::http::http_request message)
 {
     message.reply(web::http::status_codes::NotImplemented, (web::http::methods::DEL));
 }
 
-void MyCommandHandler::handlerHead(web::http::http_request message)
+void MyCommandHandler::handleHead(web::http::http_request message)
 {
     message.reply(web::http::status_codes::NotImplemented, (web::http::methods::HEAD));
 }
 
-void MyCommandHandler::handlerOptions(web::http::http_request message)
+void MyCommandHandler::handleOptions(web::http::http_request message)
 {
     message.reply(web::http::status_codes::NotImplemented, (web::http::methods::OPTIONS));
 }
 
-void MyCommandHandler::handlerMerge(web::http::http_request message)
+void MyCommandHandler::handleMerge(web::http::http_request message)
 {
     message.reply(web::http::status_codes::NotImplemented, (web::http::methods::MERGE));
 }
 
-void MyCommandHandler::handlerConnect(web::http::http_request message)
+void MyCommandHandler::handleConnect(web::http::http_request message)
 {
     message.reply(web::http::status_codes::NotImplemented, (web::http::methods::CONNECT));
 }
 
-void MyCommandHandler::handlerTrace(web::http::http_request message)
+void MyCommandHandler::handleTrace(web::http::http_request message)
 {
     message.reply(web::http::status_codes::NotImplemented, (web::http::methods::TRCE));
 }
@@ -78,28 +92,35 @@ void MyCommandHandler::setEndpoints(const std::string &values)
     endpointBuilder.set_port(endpointURI.port());
     endpointBuilder.set_path(endpointURI.path());
 
-    listener =  http_listener(endpointBuilder.to_uri());
+    _listener =  http_listener(endpointBuilder.to_uri());
+
 }
 
 std::string MyCommandHandler::endpoints() 
 {
-    return listener.uri().to_string();
+    return _listener.uri().to_string();
 }
 
 pplx::task<void>MyCommandHandler::accept()
 {
     initHandlers();
-    return listener.open();
+    return _listener.open();
 }
 
 pplx::task<void>MyCommandHandler::shutdown()
 {
-    return listener.close();
+    return _listener.close();
 }
 
 std::vector<utility::string_t>MyCommandHandler::requestPatch(const web::http::http_request & message)
 {
     auto relativePath = web::uri::decode(message.relative_uri().path());
     return web::uri::split_path(relativePath);
+}
+
+json::value MyCommandHandler::responseNotImpl(const http::method & method) {
+    auto response = web::json::value::object();
+    response["http_method"] = json::value::string(method);
+    return response ;
 }
 

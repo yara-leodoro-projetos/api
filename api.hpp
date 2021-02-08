@@ -6,21 +6,35 @@
 #include <cpprest/uri.h>
 #include <cpprest/http_listener.h>
 #include <boost/asio.hpp>
+#include "controller.hpp"
+
 
 using namespace web::http::experimental::listener;
+using namespace cfx;
 
-class MyCommandHandler
+class MyCommandHandler : public Controller
 {
 public:
 
-    MyCommandHandler(){}
+    MyCommandHandler():Controller(){}
+    ~MyCommandHandler(){}
+    void handleGet(http_request message) override;
+    void handlePut(http_request message) override;
+    void handlePost(http_request message) override;
+    void handleDelete(http_request message) override;
+    void handlePatch(http_request messge) override;
+    void handleHead(http_request message) override;
+    void handleOptions(http_request message) override;
+    void handleTrace(http_request message) override;
+    void handleConnect(http_request message) override;
+    void handleMerge(http_request message) override;
+    void initHandlers() override;
+    void setEndpoints(const std::string &values);
 
     MyCommandHandler(utility::string_t url);
     pplx::task<void> accept();
     pplx::task<void> shutdown();
-
-    void initHandlers();
-    void setEndpoints(const std::string &values);
+    
 
     std::string endpoints();
     std::vector<utility::string_t> requestPatch(const web::http::http_request & message);
@@ -29,19 +43,10 @@ public:
 
    
 private:
+    static web::json::value responseNotImpl(const web::http::method & method);
 
-    void handlerGet(web::http::http_request message);
-    void handlerPut(web::http::http_request message);
-    void handlerPost(web::http::http_request message);
-    void handlerDelete(web::http::http_request message);
-    void handlerPatch(web::http::http_request message);
-    void handlerHead(web::http::http_request message);
-    void handlerOptions(web::http::http_request message);
-    void handlerConnect(web::http::http_request message);
-    void handlerMerge(web::http::http_request message);
-    void handlerTrace(web::http::http_request message);
-    void initRestOpHandler();
-    http_listener listener;
+protected:
+    http_listener _listener;
 };
 
 #endif /*_API_HPP*/

@@ -5,13 +5,15 @@
 #include <boost/asio.hpp>
 #include "api.hpp"
 
+
+
 int main(int argc, char const *argv[])
 {
     try
     {
         MyCommandHandler handler;
 
-        handler.setEndpoints("http://172.19.7.132:5000/endpoints");
+        handler.setEndpoints("http://172.19.7.132:5000/person");
         handler.initHandlers();
         handler.accept(); 
 
