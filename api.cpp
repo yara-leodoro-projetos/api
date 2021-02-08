@@ -25,7 +25,7 @@ void MyCommandHandler::handleGet(web::http::http_request message)
 
     if (!path.empty())
     {
-        if (path[1] == "person")
+        if (path[1] == "person" && path[2] == "test")
         {
             auto response = web::json::value::object();
             response["mensage"] = web::json::value::string("person");
@@ -33,7 +33,9 @@ void MyCommandHandler::handleGet(web::http::http_request message)
             message.reply(web::http::status_code(), "ACCEPTED");    
         }
     }  
-    message.reply(web::http::status_codes::NotFound);
+    else{
+        message.reply(web::http::status_codes::NotFound);
+    }
 }
 
 void MyCommandHandler::handlePatch(web::http::http_request message)
@@ -103,7 +105,6 @@ std::string MyCommandHandler::endpoints()
 
 pplx::task<void>MyCommandHandler::accept()
 {
-    initHandlers();
     return _listener.open();
 }
 
@@ -121,6 +122,6 @@ std::vector<utility::string_t>MyCommandHandler::requestPatch(const web::http::ht
 json::value MyCommandHandler::responseNotImpl(const http::method & method) {
     auto response = web::json::value::object();
     response["http_method"] = json::value::string(method);
-    return response ;
+    return response;
 }
 

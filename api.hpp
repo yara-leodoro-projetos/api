@@ -36,7 +36,7 @@ public:
     pplx::task<void> shutdown();
     
 
-    std::string endpoints();
+    std::string endpoints() const;
     std::vector<utility::string_t> requestPatch(const web::http::http_request & message);
 
     static std::string hostName();
