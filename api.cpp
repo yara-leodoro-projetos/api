@@ -15,7 +15,7 @@ void MyCommandHandler::initHandlers()
     _listener.support(web::http::methods::GET, std::bind(&MyCommandHandler::handleGet, this, std::placeholders::_1));
     _listener.support(web::http::methods::POST, std::bind(&MyCommandHandler::handlePost, this, std::placeholders::_1));
     _listener.support(web::http::methods::PUT, std::bind(&MyCommandHandler::handlePut, this, std::placeholders::_1));
-   _listener.support(web::http::methods::PATCH, std::bind(&MyCommandHandler::handlePatch, this, std::placeholders::_1));
+    _listener.support(web::http::methods::PATCH, std::bind(&MyCommandHandler::handlePatch, this, std::placeholders::_1));
     _listener.support(web::http::methods::DEL, std::bind(&MyCommandHandler::handleDelete, this, std::placeholders::_1));;
 }
 
@@ -119,9 +119,10 @@ std::vector<utility::string_t>MyCommandHandler::requestPatch(const web::http::ht
     return web::uri::split_path(relativePath);
 }
 
-json::value MyCommandHandler::responseNotImpl(const http::method & method) {
+web::json::value MyCommandHandler::responseNotImpl(const web::http::method & method)
+{
     auto response = web::json::value::object();
-    response["http_method"] = json::value::string(method);
+    response["http_method"] = web::json::value::string(method);
     return response;
 }
 
